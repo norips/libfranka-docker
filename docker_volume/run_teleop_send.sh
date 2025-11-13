@@ -1,0 +1,1 @@
+python3.8 /docker_volume/so100_to_ros/send_to_ros.py

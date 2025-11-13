@@ -1,0 +1,1 @@
+roslaunch panda_moveit_config panda_gazebo_servo.launch z:=0.717 yaw:=-1.5707 

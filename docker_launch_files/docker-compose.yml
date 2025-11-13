@@ -60,3 +60,31 @@ services:
       - SYS_NICE
     
     tty: true
+  franka_ros_lerobot:
+    build:
+      context: ../
+      dockerfile: docker_launch_files/franka_ros_lerobot/Dockerfile
+      
+    image: libfranka:franka_ros_lerobot
+    
+    container_name: u20.04-franka_ros_lerobot
+
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw    
+      - /dev:/dev                        
+      - ../docker_volume:/docker_volume 
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+    environment:
+      - DISPLAY=$DISPLAY
+      - TZ=Europe/London
+      - LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu
+    
+    network_mode: host
+    
+    privileged: true
+
+    cap_add:
+      - SYS_NICE
+    
+    tty: true
