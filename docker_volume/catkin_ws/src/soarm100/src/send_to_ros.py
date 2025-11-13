@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.8
 import zmq
 import rospy
 from geometry_msgs.msg import PoseStamped
@@ -30,7 +31,12 @@ def main():
     prev_gripper = None
 
     use_action_goal = False
-    use_cartesian_controller = False
+    use_servo = rospy.get_param("~use_servo", False)
+    if use_servo:
+        use_cartesian_controller = False
+    else:
+        use_cartesian_controller = True
+
 
     if use_cartesian_controller:
         pub = rospy.Publisher("/cartesian_impedance_example_controller/equilibrium_pose", PoseStamped, queue_size=10)
@@ -93,7 +99,7 @@ def main():
                 "qw": data["ee.qw"],
                 "gripper": data["ee.gripper_pos"] / 100.0
             }
-            rospy.loginfo(f"Received from Lerobot: {debug}")
+            # rospy.loginfo(f"Received from Lerobot: {debug}")
         except zmq.Again:
             pass
         rate.sleep()

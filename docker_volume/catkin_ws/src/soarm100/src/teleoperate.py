@@ -1,5 +1,3 @@
-# !/usr/bin/env python
-
 # Copyright 2025 The HuggingFace Inc. team. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +36,7 @@ from scipy.spatial.transform import Rotation
 import math
 import numpy as np
 
-FPS = 60
+FPS = 30
 
 # Retrieve SO-ARM100 EE position & orientation through LeRobot library and send them over ZMQ as LeRobot is not compatible with python version shipped with ROS1 noetic.
 # See "send_to_ros.py" that receive this information and send it back as ros topic
@@ -173,7 +171,7 @@ def main():
         # debug = {
         #     "leader_ee_act": leader_ee_act
         # }
-        # print(debug)
+        print(debug)
 
         # Visualize
         # log_rerun_data(observation=leader_ee_act)

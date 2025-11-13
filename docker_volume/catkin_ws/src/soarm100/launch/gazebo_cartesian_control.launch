@@ -1,0 +1,17 @@
+<launch>
+  <!-- Launch Gazebo + the Franka robot -->
+  <include file="$(find franka_gazebo)/launch/panda.launch">
+    <arg name="z" value="0.717" />
+    <arg name="yaw" value="-1.5707" />
+    <arg name="world" value="$(find soarm100)/config/demo_world_no_panda.sdf" />
+    <arg name="controller" value="cartesian_impedance_example_controller" />
+    <arg name="interactive_marker" value="false" />
+    <arg name="rviz" value="true" />
+  </include>
+
+  <!-- Node to send commands to ROS (maybe your absolute pose generator) -->
+  <node pkg="soarm100" type="send_to_ros.py" name="send_to_ros" output="log" />
+
+  <!-- Teleoperation node (shell script wrapper) -->
+  <node pkg="soarm100" type="teleoperate.py" name="teleoperate" output="log" launch-prefix="$(find soarm100)/src/run_conda.sh" />
+</launch>
