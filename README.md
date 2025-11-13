@@ -1,4 +1,28 @@
-# libfranka-docker
+# libfranka-docker-lerobot
+
+This is a fork of [libfranka-docker](https://github.com/Fjakob/libfranka-docker). See below for original README.
+
+This repo is meant to use a SO-100 leader arm to control a Franka Panda (FER) arm. This is based on ROS1.
+
+# Usage
+
+In the terminal, `cd` to the `docker_launch_files` directory. Build the image first:
+
+	docker compose build franka_ros_lerobot
+
+Then run it
+
+	docker compose run franka_ros_lerobot
+
+To start Gazebo and control the arm, first connect your SO-100 leader arm to the computer and make sure it's shown under `/dev/ttyACM0` (if the path is different, edit `docker_launch_files/docker-compose.yml`). 
+Then from within the contain run
+
+	roslaunch soarm100 gazebo_cartesian_control.launch
+
+The simulated Franka Panda arm in Gazebo should move following your SO-100 leader arm.
+
+
+# Original README
 
 Docker Images for portable [libfranka](https://frankaemika.github.io/docs/libfranka.html) execution for both [franka_ros](https://frankaemika.github.io/docs/franka_ros.html) and [franka_ros2](https://frankaemika.github.io/docs/franka_ros2.html).
 
