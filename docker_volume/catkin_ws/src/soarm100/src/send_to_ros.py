@@ -63,6 +63,16 @@ def main():
             pose.pose.orientation.z = data["ee.qz"]   
             pose.pose.orientation.w = data["ee.qw"]
 
+            if pose.pose.position.z <= -0.3: # Where the table should be
+                pose.pose.position.z = -0.3
+            if pose.pose.position.x >= 0.5:
+                pose.pose.position.x = 0.5
+            if pose.pose.position.x <= -0.5:
+                pose.pose.position.x = -0.5
+            if pose.pose.position.y <= 0:
+                pose.pose.position.y = 0
+            
+
 
             # if use_action_goal:
             #     goal_gripper = GraspActionGoal()
@@ -93,13 +103,12 @@ def main():
 
 
             debug = {
-                "qx": data["ee.qx"],
-                "qy": data["ee.qy"],
-                "qz": data["ee.qz"],
-                "qw": data["ee.qw"],
-                "gripper": data["ee.gripper_pos"] / 100.0
+                "x": data["ee.qx"],
+                "y": data["ee.qy"],
+                "z": data["ee.qz"],
             }
             # rospy.loginfo(f"Received from Lerobot: {debug}")
+            rospy.loginfo(f"Sending {pose}")
         except zmq.Again:
             pass
         rate.sleep()

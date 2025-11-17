@@ -1,13 +1,14 @@
 <launch>
   <!-- Load MoveIt and Gazebo -->
-  <include file="$(find panda_moveit_config)/launch/demo_gazebo.launch" pass_all_args="true">
+  <include file="$(find panda_moveit_config)/launch/demo.launch" pass_all_args="true">
       <arg name="z" value="0.717" />
       <arg name="yaw" value="-1.5707" />
   </include>
 
+
   <!-- Servo node -->
   <node pkg="moveit_servo" type="servo_server" name="servo_server" output="log">
-    <rosparam command="load" file="$(find panda_moveit_config)/config/panda_servo.yaml"/>
+    <rosparam command="load" file="$(find panda_moveit_config)/config/panda_servo_moveit.yaml"/>
   </node>
 
   <!-- Node to send commands to ROS (maybe your absolute pose generator) -->
@@ -19,5 +20,5 @@
   <node pkg="soarm100" type="teleoperate.py" name="teleoperate" output="log" launch-prefix="$(find soarm100)/src/run_conda.sh" />
 
   <!-- Absolute to twist convert node-->
-  <!-- <node pkg="soarm100" type="pose_to_twist.py" name="pose_to_twist" output="log"/> -->
+  <node pkg="soarm100" type="pose_to_twist.py" name="pose_to_twist" output="log"/>
 </launch>

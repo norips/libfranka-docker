@@ -9,8 +9,8 @@ class PoseToTwist:
         # Params
         self.base_frame = rospy.get_param("~base_frame", "panda_link0")
         self.ee_frame   = rospy.get_param("~ee_frame", "panda_link8")  # change to your EE link
-        self.linear_gain = rospy.get_param("~linear_gain", 1.0)         # m/s per meter error
-        self.angular_gain = rospy.get_param("~angular_gain", 1.0)       # rad/s per rad error
+        self.linear_gain = rospy.get_param("~linear_gain", 10.0)         # m/s per meter error
+        self.angular_gain = rospy.get_param("~angular_gain", 10.0)       # rad/s per rad error
         self.rate_hz = rospy.get_param("~rate", 100)
 
         # ROS interfaces
@@ -115,7 +115,7 @@ class PoseToTwist:
             twist.twist.angular.z = self.angular_gain * ang_error[2]
 
             self.cmd_pub.publish(twist)
-            # rospy.loginfo(f"pose_to_twist node published {twist}")
+            rospy.loginfo(f"pose_to_twist node published {twist}")
             rate.sleep()
 
 if __name__ == "__main__":

@@ -30,12 +30,13 @@ WORKDIR /docker_volume
 
 
 ### Install Libfranka
-COPY ./install_franka_ros.sh /install_franka_ros.sh
+COPY docker_launch_files/franka_ros_lerobot/install_franka_ros.sh /install_franka_ros.sh
 RUN chmod +x /install_franka_ros.sh
 
 ### Install rqt-graph for debugging & wget for conda
 RUN apt-get update && apt-get install -y \
     ros-noetic-rqt-graph \
+    ros-noetic-rqt-reconfigure \
     wget
 
 ### Install conda
@@ -66,7 +67,7 @@ RUN conda run --no-capture-output -n lerobot pip install zmq scipy
 
 RUN python3.8 -m pip install zmq
 
-RUN apt-get update && apt-get install -y ros-noetic-moveit-visual-tools ros-noetic-moveit-ros-move-group ros-noetic-moveit
+RUN apt-get update && apt-get install -y ros-noetic-moveit-visual-tools ros-noetic-moveit-ros-move-group ros-noetic-moveit ros-noetic-moveit-servo
 
 COPY docker_volume/catkin_ws/src /tmp/catkin_ws/src
 RUN cd /tmp/catkin_ws && rosdep install --from-paths src --ignore-src --rosdistro noetic -y --skip-keys libfranka && cd / && rm -rf /tmp/catkin_ws/src
