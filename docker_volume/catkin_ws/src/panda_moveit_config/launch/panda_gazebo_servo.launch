@@ -1,0 +1,9 @@
+<launch>
+  <!-- Load MoveIt and Gazebo -->
+  <include file="$(find panda_moveit_config)/launch/demo_gazebo.launch" pass_all_args="true"/>
+
+  <!-- Servo node -->
+  <node pkg="moveit_servo" type="servo_server" name="servo_server" output="log">
+    <rosparam command="load" file="$(find panda_moveit_config)/config/panda_servo.yaml"/>
+  </node>
+</launch>
