@@ -1,0 +1,14 @@
+<launch>
+  <!-- Launch Gazebo + the Franka robot -->
+  <include file="$(find franka_example_controllers)/launch/cartesian_impedance_example_controller.launch">
+    <arg name="robot_ip" value="192.168.8.2" />
+    <arg name="load_gripper" value="true" />
+    <arg name="robot" value="panda" />
+  </include>
+
+  <!-- Node to send commands to ROS (maybe your absolute pose generator) -->
+  <!-- <node pkg="soarm100" type="send_to_ros.py" name="send_to_ros" output="screen" /> -->
+
+  <!-- Teleoperation node (shell script wrapper) -->
+  <node pkg="soarm100" type="teleoperate.py" name="teleoperate" output="log" launch-prefix="$(find soarm100)/src/run_conda.sh" />
+</launch>

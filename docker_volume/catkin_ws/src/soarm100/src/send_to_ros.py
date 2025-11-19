@@ -3,10 +3,44 @@ import zmq
 import rospy
 from geometry_msgs.msg import PoseStamped
 from franka_gripper.msg import GraspActionGoal, MoveActionGoal
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Point
 import json
 import math
 
 import numpy as np
+
+def create_box_marker(x_limits, y_limits, z_limits):
+    """Create a line strip that represents the bounding box."""
+    marker = Marker()
+    marker.header.frame_id = "panda_link0"
+    marker.header.stamp = rospy.Time.now()
+    marker.type = marker.LINE_STRIP
+    marker.action = marker.ADD
+    marker.points = [
+            Point(x=x_limits[0], y=y_limits[0], z=z_limits[0]),
+            Point(x=x_limits[1], y=y_limits[0], z=z_limits[0]),
+            Point(x=x_limits[1], y=y_limits[1], z=z_limits[0]),
+            Point(x=x_limits[0], y=y_limits[1], z=z_limits[0]),
+            Point(x=x_limits[0], y=y_limits[0], z=z_limits[0]),
+            Point(x=x_limits[0], y=y_limits[0], z=z_limits[1]),
+            Point(x=x_limits[1], y=y_limits[0], z=z_limits[1]),
+            Point(x=x_limits[1], y=y_limits[1], z=z_limits[1]),
+            Point(x=x_limits[0], y=y_limits[1], z=z_limits[1]),
+            Point(x=x_limits[0], y=y_limits[0], z=z_limits[1]),
+            Point(x=x_limits[1], y=y_limits[0], z=z_limits[1]),
+            Point(x=x_limits[1], y=y_limits[0], z=z_limits[0]),
+            Point(x=x_limits[1], y=y_limits[1], z=z_limits[0]),
+            Point(x=x_limits[1], y=y_limits[1], z=z_limits[1]),
+            Point(x=x_limits[0], y=y_limits[1], z=z_limits[1]),
+            Point(x=x_limits[0], y=y_limits[1], z=z_limits[0])
+            ]
+    marker.scale.x = 0.01
+    marker.color.a = 1.0
+    marker.color.r = 1.0
+    marker.color.g = 0.0
+    marker.color.b = 1.0
+    return marker
 
 # Retrieve position through ZMQ and publish them as ROS topic
 def main():
@@ -17,12 +51,18 @@ def main():
     socket.setsockopt(zmq.LINGER, 0)
     socket.connect("ipc:///tmp/test.sock")
 
+
+    x_limits = [-0.3, 0.3]
+    y_limits = [0.3, 1]
+    z_limits = [0.1, 0.6]
+
     # socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
     rospy.init_node("ee_pose_commander")
 
     pub_gripper = rospy.Publisher("/franka_gripper/grasp/goal", GraspActionGoal, queue_size=10)
     pub_gripper_move = rospy.Publisher("/franka_gripper/move/goal", MoveActionGoal, queue_size=10)
+    pub_bb = rospy.Publisher('visualization_marker', Marker, queue_size=10)
 
     rate = rospy.Rate(100)
 
@@ -47,6 +87,7 @@ def main():
     print(bins)
     while not rospy.is_shutdown():
         try:
+            pub_bb.publish(create_box_marker(x_limits, y_limits, z_limits))
             is_diff = False
 
             msg = socket.recv_string(flags=zmq.NOBLOCK)
@@ -58,19 +99,21 @@ def main():
             pose.pose.position.x = data["ee.x"] * scale_ratio
             pose.pose.position.y = data["ee.y"] * scale_ratio
             pose.pose.position.z = data["ee.z"] * scale_ratio
-            pose.pose.orientation.x = data["ee.qx"] 
-            pose.pose.orientation.y = data["ee.qy"] 
-            pose.pose.orientation.z = data["ee.qz"]   
-            pose.pose.orientation.w = data["ee.qw"]
+            # pose.pose.orientation.x = data["ee.qx"] 
+            # pose.pose.orientation.y = data["ee.qy"] 
+            # pose.pose.orientation.z = data["ee.qz"]   
+            # pose.pose.orientation.w = data["ee.qw"]
+            pose.pose.orientation.x = 0.7071
+            pose.pose.orientation.y = 0.7071
+            pose.pose.orientation.z = 0
+            pose.pose.orientation.w = 0
 
-            if pose.pose.position.z <= -0.3: # Where the table should be
-                pose.pose.position.z = -0.3
-            if pose.pose.position.x >= 0.5:
-                pose.pose.position.x = 0.5
-            if pose.pose.position.x <= -0.5:
-                pose.pose.position.x = -0.5
-            if pose.pose.position.y <= 0:
-                pose.pose.position.y = 0
+            if (pose.pose.position.x < x_limits[0] or pose.pose.position.x > x_limits[1]):
+                pose.pose.position.x = x_limits[0] if pose.pose.position.x < x_limits[0] else x_limits[1]
+            if (pose.pose.position.y < y_limits[0] or pose.pose.position.y > y_limits[1]):
+                pose.pose.position.y = y_limits[0] if pose.pose.position.y < y_limits[0] else y_limits[1]
+            if (pose.pose.position.z < z_limits[0] or pose.pose.position.z > z_limits[1]):
+                pose.pose.position.z = z_limits[0] if pose.pose.position.z < z_limits[0] else z_limits[1]
             
 
 
